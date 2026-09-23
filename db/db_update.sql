@@ -144,3 +144,23 @@ ALTER TABLE `md_payhead_earning`
 ALTER TABLE `td_other_deduction`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `td_short_urls` (self-hosted URL shortener,
+-- replaces reliance on the external is.gd API)
+--
+
+DROP TABLE IF EXISTS `td_short_urls`;
+CREATE TABLE `td_short_urls` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `short_code` varchar(20) NOT NULL,
+  `payload` text NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `access_count` int(11) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `short_code` (`short_code`),
+  KEY `expires_at` (`expires_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

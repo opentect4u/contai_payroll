@@ -4,31 +4,14 @@ defined('BASEPATH') or exit('No direct script access allowed');
 class Payslip_model extends CI_Model
 {
 
-    function shorten_url($long_url) {
+    function shorten_url($long_url, $ttl_days = 2) {
         $long_url = str_replace("\/", "/", $long_url);
         //Validate URL format
-        if (!filter_var($long_url, FILTER_VALIDATE_URL)) { 
+        if (!filter_var($long_url, FILTER_VALIDATE_URL)) {
             return false;
         }
-        // API endpoint (plain text response)
-        $api_url = "https://is.gd/create.php?format=simple&url=" . urlencode($long_url);
-        // Use cURL for better error handling
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $api_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        $short_url = curl_exec($ch);
-        if (curl_errno($ch)) { 
-            curl_close($ch);
-            return false; // cURL error
-        }
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        // Check if API returned success
-        if ($httpcode === 200) {
-            return $short_url;
-        }
-        return false;
+        $this->load->model('shorturl_model');
+        return $this->shorturl_model->create($long_url, $ttl_days);
     }
 
     function send_sms($row) {        

@@ -89,6 +89,9 @@ $route['scatg'] = 'admin/category_seve'; // SAVE
 /*$route['slrydeded'] = 'salary/deduction_edit';
 $route['deddl'] = 'salary/deduction_delete';*/
 // $route['paysliprep'] = 'reports/payslipreport';
+// Self-hosted short URL redirect (replaces is.gd)
+$route['s/(:any)'] = 'shorturl/index/$1';
+
 //For Profile
 $route['profile'] = 'profiles';
 $route['profile/(:any)/(:any)'] = 'profiles/f_$1_$2';
