@@ -1,2 +1,6 @@
 application/config/database.php
+application/config/shorturl.php
 application/cache/session/*
+shorten_url_function/.env
+shorten_url_function/node_modules/
+shorten_url_function
