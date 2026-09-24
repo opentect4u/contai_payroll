@@ -103,6 +103,9 @@ define('SMS_TEMPLATE_HD', 'http://sms.synergicapi.in/api.php?username=CONTAIARDB
 // define('SMS_TEMPLATE_TEXT', 'Dear {#var2#}, Your salary for {#var3#} has been successfully processed. To view your paysheet, click the link {#var4#} - Contai CARD Bank Ltd.');
 define('SMS_TEMPLATE_TEXT', 'Dear {#var2#}, Your salary for {#var3#} has been successfully processed. To view your paysheet, click the link {#var4#} - Contai Co-Operative ARDB Ltd.');
 
+define('SHORTEN_URL_API', '');
+define('SHORTURL_API_KEY', '');
+
 
 
 define('PAYHEAD_DA', 457);

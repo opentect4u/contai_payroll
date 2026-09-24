@@ -10,8 +10,41 @@ class Payslip_model extends CI_Model
         if (!filter_var($long_url, FILTER_VALIDATE_URL)) {
             return false;
         }
-        $this->load->model('shorturl_model');
-        return $this->shorturl_model->create($long_url, $ttl_days);
+
+        $api_url = SHORTEN_URL_API;
+        echo '<br> API URL---------- ' . $api_url . '<br>';
+        $payload = json_encode(array(
+            'url' => $long_url,
+            'ttl_days' => $ttl_days,
+        ));
+
+        $ch = curl_init();
+        curl_setopt_array($ch, array(
+            CURLOPT_URL => $api_url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $payload,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'X-API-Key: ' . SHORTURL_API_KEY,
+            ),
+            CURLOPT_TIMEOUT => 10,
+        ));
+        $response = curl_exec($ch);
+        var_dump($response); // Debugging line to check the response
+        if (curl_errno($ch)) {
+            curl_close($ch);
+            return false;
+        }
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpcode !== 200) {
+            return false;
+        }
+
+        $data = json_decode($response, true);
+        return isset($data['short_url']) ? $data['short_url'] : false;
     }
 
     function send_sms($row) {        
@@ -27,11 +60,14 @@ class Payslip_model extends CI_Model
         $params = rand(1000, 9999) . $sms_id . rand(1000, 9999);
         $url = site_url('payslip/download/' . $params);
         $url = $this->shorten_url($url);
+        echo '<br> SHURL---------- ' . $url . '<br>';
         $template_hd = str_replace('{#var1#}', $row->phn_no, SMS_TEMPLATE_HD);
         $template_text = str_replace('{#var2#}', $row->emp_name, SMS_TEMPLATE_TEXT);
         $period = date('F', mktime(0, 0, 0, $row->sal_month, 10)) . ', ' . $row->sal_year;
         $template_text = str_replace('{#var3#}', $period, $template_text);
         $template_text = str_replace('{#var4#}', str_replace('https://', '', $url), $template_text);
+
+        echo $template_hd . urlencode($template_text); exit;
         
         //$template = 'http://sms.synergicapi.in/api.php?username=CONTAIARDB&apikey=GJLNb0RYDTGG&senderid=CCARDB&route=OTP&mobile=9051203118&text=Dear Nishanta Sahoo, Your salary for October, 2025 has been successfully processed. To view your paysheet, click the link https://is.gd/lu43KC - Contai CARD Bank Ltd.';
         //$template = 'http://sms.synergicapi.in/api.php?username=CONTAIARDB&apikey=GJLNb0RYDTGG&senderid=CCARDB&route=OTP&mobile=9831887194&text=Dear Tanmoy, Your salary for oct-2025 has been successfully processed. To view your paysheet, click the link abcd.com - Contai CARD Bank Ltd.';
